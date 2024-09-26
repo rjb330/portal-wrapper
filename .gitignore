@@ -1,0 +1,6 @@
+
+*.kdevelop
+*.filelist
+*.pcs
+*.kdevses
+/build
