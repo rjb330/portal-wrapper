@@ -9,6 +9,5 @@ TODO
 ----
 
 - Fix GTK3 file dialogs.
-- Add support for opening folders.
 - Add support for filters.
 - Add support for custom widgets.

@@ -598,6 +598,11 @@ gint gtk_dialog_run(GtkDialog *dialog)
 		dialogRunning = TRUE;
 
 		switch (act) {
+			case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
+			case GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER:
+				// there are no libportal calls for opening folders
+				return (gint)realFunction(dialog);
+				break;
 			case GTK_FILE_CHOOSER_ACTION_OPEN:
 				if (gtk_file_chooser_get_select_multiple(GTK_FILE_CHOOSER(dialog))) {
 					xdp_portal_open_file(portal, NULL, title, NULL, NULL, NULL, XDP_OPEN_FILE_FLAG_MULTIPLE, NULL, _portalOpenFileDialogCallback, &ret);
@@ -607,10 +612,6 @@ gint gtk_dialog_run(GtkDialog *dialog)
 				break;
 			case GTK_FILE_CHOOSER_ACTION_SAVE:
 				xdp_portal_save_file(portal, NULL, title, data->name, data->folder, NULL, NULL, NULL, NULL, XDP_SAVE_FILE_FLAG_NONE, NULL, _portalSaveFileDialogCallback, &ret);
-				break;
-			case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
-			case GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER:
-				// TODO
 				break;
 		}
 
@@ -635,7 +636,6 @@ gint gtk_dialog_run(GtkDialog *dialog)
 		}
 
 		// fixes a case in some apps not accepting a response the first time after setting the folder (maybe)
-		// this solution is terrible
 		for (int i=0; i<20; i++) do {
 			gtk_main_iteration_do(FALSE);
 		} while (gtk_events_pending());
