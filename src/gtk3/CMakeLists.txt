@@ -14,7 +14,7 @@ if (GTK3_FOUND)
 	include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/gtk3 ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_BINARY_DIR})
 	
 	add_library(gtk3-portal SHARED ${gtk3_portal_SRCS})
-	target_link_libraries(gtk3-portal ${GTK3_LDFLAGS} -lgthread-2.0 -lglib-2.0 -lc -ldl -lportal)
+	target_link_libraries(gtk3-portal ${GTK3_LDFLAGS} -lgthread-2.0 -lglib-2.0 -lc -ldl -lportal -lportal-gtk3)
 	target_compile_options(gtk3-portal PRIVATE -Werror -Wno-deprecated-declarations)
 
 	install(TARGETS gtk3-portal LIBRARY DESTINATION ${LIB_INSTALL_DIR}/gtk-portal NAMELINK_SKIP)
