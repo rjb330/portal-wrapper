@@ -3,7 +3,6 @@
 #define _GNU_SOURCE
 #endif
 
-#include <libportal/portal.h>
 #include <dlfcn.h>
 #include <gtk/gtk.h>
 #include <glib.h>
@@ -21,6 +20,12 @@
 #include <sys/stat.h>
 #include <stdarg.h>
 #include <ctype.h>
+
+#if GTK_CHECK_VERSION(3, 0, 0)
+#include <libportal-gtk3/portal-gtk3.h>
+#else
+#include <libportal/portal.h>
+#endif
 
 #include "config.h"
 
@@ -588,6 +593,7 @@ gint gtk_dialog_run(GtkDialog *dialog)
 	if (P_gtkInit(NULL) && GTK_IS_FILE_CHOOSER(dialog) && !dialogRunning) {
 		GtkFileChooserAction act = gtk_file_chooser_get_action(GTK_FILE_CHOOSER(dialog));
 		const gchar *title = gtk_window_get_title(GTK_WINDOW(dialog));
+		XdpParent *p_window = NULL;
 		P_GtkFileData *data = lookupHash(dialog, TRUE);
 		gint resp = data->cancel;
 		GVariant *ret = NULL;
@@ -595,6 +601,10 @@ gint gtk_dialog_run(GtkDialog *dialog)
 		gtk_file_chooser_get_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog));
 		P_gtkFileChooserSetDoOverwriteConfirmation(GTK_FILE_CHOOSER(dialog), FALSE, FALSE);
 		
+#if GTK_CHECK_VERSION(3, 0, 0)
+		p_window = xdp_parent_new_gtk(gtk_window_get_transient_for(GTK_WINDOW(dialog)));
+#endif
+
 		dialogRunning = TRUE;
 
 		switch (act) {
@@ -605,13 +615,13 @@ gint gtk_dialog_run(GtkDialog *dialog)
 				break;
 			case GTK_FILE_CHOOSER_ACTION_OPEN:
 				if (gtk_file_chooser_get_select_multiple(GTK_FILE_CHOOSER(dialog))) {
-					xdp_portal_open_file(portal, NULL, title, NULL, NULL, NULL, XDP_OPEN_FILE_FLAG_MULTIPLE, NULL, _portalOpenFileDialogCallback, &ret);
+					xdp_portal_open_file(portal, p_window, title, NULL, NULL, NULL, XDP_OPEN_FILE_FLAG_MULTIPLE, NULL, _portalOpenFileDialogCallback, &ret);
 				} else {
-					xdp_portal_open_file(portal, NULL, title, NULL, NULL, NULL, XDP_OPEN_FILE_FLAG_NONE, NULL, _portalOpenFileDialogCallback, &ret);
+					xdp_portal_open_file(portal, p_window, title, NULL, NULL, NULL, XDP_OPEN_FILE_FLAG_NONE, NULL, _portalOpenFileDialogCallback, &ret);
 				}
 				break;
 			case GTK_FILE_CHOOSER_ACTION_SAVE:
-				xdp_portal_save_file(portal, NULL, title, data->name, data->folder, NULL, NULL, NULL, NULL, XDP_SAVE_FILE_FLAG_NONE, NULL, _portalSaveFileDialogCallback, &ret);
+				xdp_portal_save_file(portal, p_window, title, data->name, data->folder, NULL, NULL, NULL, NULL, XDP_SAVE_FILE_FLAG_NONE, NULL, _portalSaveFileDialogCallback, &ret);
 				break;
 		}
 
@@ -662,9 +672,15 @@ void gtk_widget_destroy(GtkWidget *widget)
 	realFunction(widget);
 }
 
+#if GTK_CHECK_VERSION(3, 0, 0)
+void gtk_native_dialog_destroy(GtkNativeDialog* dialog) {
+	freeHash(GTK_WIDGET(dialog));
+}
+#else
 void gtk_native_dialog_destroy(GtkWidget* widget) {
 	freeHash(widget);
 }
+#endif
 
 gchar *gtk_file_chooser_get_filename(GtkFileChooser *chooser)
 {

@@ -21,6 +21,24 @@ fi
 
 toolkit=""
 
+if [ "$toolkit" = "" ] ; then
+	case "$app_name" in
+	gimp)
+		toolkit="gtk2" ;;
+	iceweasel | swiftfox | mozilla* | thunderbird | firefox | chromium)
+		toolkit="gtk3" ;;
+	palemoon*)
+		libs="$(ldd "$app_arg_path/libxul.so" 2>/dev/null)"
+		if [ "0" != "$(echo "$libs" | grep libgtk-x11-2 | wc -l)" ] ; then
+			toolkit="gtk2"
+		elif [ "0" != "$(echo "$libs" | grep libgtk-3 | wc -l)" ] ; then
+			toolkit="gtk3"
+		fi ;;
+	abiword) # Non-working
+		toolkit="x" ;;
+	esac
+fi
+
 if [ "$toolkit" = "" ] && [ ! -z "$app_abspath" ] ; then
 	libs="$(ldd "$app_abspath" 2>/dev/null)"
 	

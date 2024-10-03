@@ -6,7 +6,7 @@ pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
 if (GTK3_FOUND)
 	message("** INFORMATION: Gtk3 LD_PRELOAD library will be built.")
 	
-	set(gtk3_portal_SRCS gtk-portal.c)
+	set(gtk3_portal_SRCS ../common/gtk-portal.c)
 	# set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
 	set(LIB_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}  CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is /lib${LIB_SUFFIX})" FORCE)
 	

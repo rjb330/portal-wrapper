@@ -5,7 +5,7 @@ find_package(GTK2)
 if (GTK2_FOUND)
 	message("** INFORMATION: Gtk2 LD_PRELOAD library will be built.")
 	
-	set(gtk2_portal_SRCS gtk-portal.c)
+	set(gtk2_portal_SRCS ../common/gtk-portal.c)
 	# set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
 	set(LIB_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}  CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is /lib${LIB_SUFFIX})" FORCE)
 	
