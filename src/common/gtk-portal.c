@@ -202,11 +202,11 @@ static gboolean P_gtkInit(const char *appName)
 			printf("GTK Portal::APP %s\n", prg);
 #endif
 			if (isMozApp(prg, "palemoon") ||
-			           isMozApp(prg, "librewolf") ||
-			           isMozApp(prg, "firefox") ||
-			           isMozApp(prg, "swiftfox") ||
-			           isMozApp(prg, "iceweasel") ||
-			           isMozApp(prg, "xulrunner")) {
+			    isMozApp(prg, "librewolf") ||
+			    isMozApp(prg, "firefox") ||
+			    isMozApp(prg, "swiftfox") ||
+			    isMozApp(prg, "iceweasel") ||
+			    isMozApp(prg, "xulrunner")) {
 				P_gtkApp = APP_FIREFOX;
 #ifdef GTK_PORTAL_DEBUG
 				printf("GTK Portal::Firefox\n");
@@ -1315,7 +1315,11 @@ static void *real_dlsym(void *handle, const char *name)
 #endif
 	
 	if (!realFunction) {
-		void *ldHandle = dlopen("libdl.so.2", RTLD_NOW);
+		static void *ldHandle;
+		
+		for (int i=0; !ldHandle && i<2; i++) {
+			ldHandle = dlopen((char*[2]){"libdl.so", "libdl.so.2"}[i], RTLD_NOW);
+		}
 		
 		if (ldHandle) {
 			static const char *versions[] = {GTK_PORTAL_DLSYM_VERSION, "GLIBC_2.3", "GLIBC_2.2.5",
