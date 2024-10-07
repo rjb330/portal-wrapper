@@ -1,12 +1,15 @@
-Introduction
-------------
+# Portal Wrapper
 
-GTK Portal Wrapper is a fork of the old KGtk software that that replaces
-kdialogd with calls to libportal. This forces GTK2 and 3 apps with no native
-XDG Desktop Portal support to use portals.
+## Introduction
 
-TODO
-----
+Portal Wrapper is a desktop-agnostic fork of the old KGtk software that allows
+some GTK apps without native portal support to use desktop portals.
+
+To start an app with portals, use the following command:
+
+    portal-wrapper <application>
+
+## TODO
 
 - Fix GTK3 file dialogs.
 - Add support for filters.
