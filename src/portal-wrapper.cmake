@@ -25,15 +25,18 @@ if [ "$toolkit" = "" ] ; then
 	case "$app_name" in
 	gimp)
 		toolkit="gtk2" ;;
-	iceweasel | swiftfox | mozilla* | thunderbird | firefox | chromium)
+	inkscape)
 		toolkit="gtk3" ;;
 	palemoon*)
+		# Check libxul.so
 		libs="$(ldd "$app_arg_path/libxul.so" 2>/dev/null)"
 		if [ "0" != "$(echo "$libs" | grep libgtk-x11-2 | wc -l)" ] ; then
 			toolkit="gtk2"
 		elif [ "0" != "$(echo "$libs" | grep libgtk-3 | wc -l)" ] ; then
 			toolkit="gtk3"
 		fi ;;
+	firefox* | nightly | chromium | seamonkey) # Has native support
+		toolkit="xdg" ;;
 	abiword) # Non-working
 		toolkit="x" ;;
 	esac
@@ -62,7 +65,10 @@ if [ ! -z "$GTK_WRAPPER_DEBUG" ]; then
 	echo "Override library: $libgtk_portal_path"
 fi
 
-if [ ! -z "$toolkit" ] && [ -f "$libgtk_portal_path" ] ; then
+if [ "$toolkit" = "xdg" ] ; then
+	export GTK_USE_PORTAL=1
+	export GDK_DEBUG=portals
+elif [ ! -z "$toolkit" ] && [ -f "$libgtk_portal_path" ] ; then
 	export LD_PRELOAD="$libgtk_portal_path:$LD_PRELOAD"
 else
 	echo "WARNING: Failed to find override library $libgtk_portal_path"
